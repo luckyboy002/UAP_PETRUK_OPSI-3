@@ -108,17 +108,13 @@ public:
         }
     }
 
-    void logout() {
+void logout() {
         if (!loggedInUser.empty()) {
             loggedInUser.clear();
             cout << "Anda Berhasil Keluar!" << endl;
         } else {
             cout << "Tidak ada user yang sedang login!" << endl;
         }
-    }
-
-    bool isLoggedIn() const {
-        return !loggedInUser.empty();
     }
 };
 
