@@ -1,0 +1,79 @@
+#include <iostream>
+#include <unordered_map>
+#include <string>
+using namespace std;
+
+struct User {
+    string username;
+    string password;
+};
+
+class ParkingSystem {
+private:
+    unordered_map<string, User> users; 
+    string loggedInUser;
+    
+    bool validateUser(const string& username, const string& password) {
+        return users.find(username) != users.end() && users[username].password == password;
+    }
+	
+    bool isLoggedIn() {
+        if (loggedInUser.empty()) {
+            cout << "Tidak Dapat Login Karena Ada Pengguna Lain!" << endl;
+            return false;
+        }
+        return true;
+    }
+
+public:
+    void registerUser(const string& username, const string& password) {
+        if (users.find(username) == users.end()) {
+            users[username] = {username, password};
+            cout << "Registrasi Anda Berhasil!" << endl;
+        } else {
+            cout << "Username Sudah Digunakan!" << endl;
+        }
+    }
+
+    bool loginUser(const string& username, const string& password) {
+        if (validateUser(username, password)) {
+            loggedInUser = username;
+            cout << "Login Berhasil!" << endl;
+            return true;
+        } else {
+            cout << "Username dan Password Anda Salah!" << endl;
+            return false;
+        }
+    }
+
+    void logout() {
+        if (!loggedInUser.empty()) {
+            loggedInUser.clear();
+            cout << "Anda Berhasil Keluar!" << endl;
+        } else {
+            cout << "Tidak ada user yang sedang login!" << endl;
+        }
+    }
+
+    bool isLoggedIn() const {
+        return !loggedInUser.empty();
+    }
+};
+
+void handleUserRegistration(ParkingSystem& ps) {
+    string username, password;
+    cout << "Masukkan username: ";
+    getline(cin, username);
+    cout << "Masukkan password: ";
+    getline(cin, password);
+    ps.registerUser(username, password);
+}
+
+bool handleUserLogin(ParkingSystem& ps) {
+    string username, password;
+    cout << "Enter username: ";
+    getline(cin, username);
+    cout << "Enter password: ";
+    getline(cin, password);
+    return ps.loginUser(username, password);
+}
