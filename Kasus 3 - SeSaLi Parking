@@ -1,6 +1,9 @@
 #include <iostream>
 #include <unordered_map>
 #include <string>
+#include <map>
+#include <cstdlib>
+#include <ctime>
 using namespace std;
 
 struct User {
@@ -8,9 +11,15 @@ struct User {
     string password;
 };
 
+struct ParkingSpot {
+    string location;
+    bool isAvailable;
+};
+
 class ParkingSystem {
 private:
-    unordered_map<string, User> users; 
+    unordered_map<string, User> users;
+    map<string, ParkingSpot> parkingSpots;
     string loggedInUser;
     
     bool validateUser(const string& username, const string& password) {
@@ -25,7 +34,30 @@ private:
         return true;
     }
 
+    string generateBarcode() {
+        string barcode = "";
+        for (int i = 0; i < 10; ++i) {
+            barcode += '0' + rand() % 10;
+        }
+        return barcode;
+    }
+
 public:
+    ParkingSystem() {
+        srand(time(0));
+        parkingSpots["Location A"] = {"Location A", true};
+        parkingSpots["Location B"] = {"Location B", true};
+        parkingSpots["Location C"] = {"Location C", false};
+        parkingSpots["Location D"] = {"Location D", true};
+        parkingSpots["Location E"] = {"Location E", true};
+        parkingSpots["Location F"] = {"Location F", false};
+        parkingSpots["Location G"] = {"Location G", false};
+        parkingSpots["Location H"] = {"Location H", true};
+        parkingSpots["Location I"] = {"Location I", true};
+        parkingSpots["Location J"] = {"Location J", true};
+        parkingSpots["Location K"] = {"Location K", false};
+    }
+
     void registerUser(const string& username, const string& password) {
         if (users.find(username) == users.end()) {
             users[username] = {username, password};
@@ -43,6 +75,36 @@ public:
         } else {
             cout << "Username dan Password Anda Salah!" << endl;
             return false;
+        }
+    }
+
+    void searchParkingSpot(const string& location) {
+        if (!isLoggedIn()) return;
+
+        auto it = parkingSpots.find(location);
+        if (it != parkingSpots.end()) {
+            if (it->second.isAvailable) {
+                cout << "Parking Area Tersedia! " << location << endl;
+            } else {
+                cout << "Parking Area " << location << " Tidak Tersedia!" << endl;
+            }
+        } else {
+            cout << "Tidak ada Parkir Area Yang Dicari! " << location << endl;
+        }
+    }
+
+    void bookParkingSpot(const string& location) {
+        if (!isLoggedIn()) return;
+
+        auto it = parkingSpots.find(location);
+        if (it != parkingSpots.end() && it->second.isAvailable) {
+            it->second.isAvailable = false;
+            cout << "Parking Area " << location << " Berhasil Di Booking!" << endl;
+            cout << "Generate Barcode..." << endl;
+            string ticket = "Ticket Untuk " + location + " - User: " + loggedInUser + " | Barcode: " + generateBarcode();
+            cout << ticket << endl;
+        } else {
+            cout << "Tidak Dapat Melakukan Pesan Parkir Area ! " << location << endl;
         }
     }
 
@@ -76,4 +138,18 @@ bool handleUserLogin(ParkingSystem& ps) {
     cout << "Enter password: ";
     getline(cin, password);
     return ps.loginUser(username, password);
+}
+
+void handleSearchParkingSpot(ParkingSystem& ps) {
+    string location;
+    cout << "Enter location: ";
+    getline(cin, location);
+    ps.searchParkingSpot(location);
+}
+
+void handleBookParkingSpot(ParkingSystem& ps) {
+    string location;
+    cout << "Enter location: ";
+    getline(cin, location);
+    ps.bookParkingSpot(location);
 }
