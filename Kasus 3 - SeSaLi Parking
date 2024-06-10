@@ -4,6 +4,7 @@
 #include <map>
 #include <cstdlib>
 #include <ctime>
+#include <limits>
 using namespace std;
 
 struct User {
@@ -107,6 +108,14 @@ public:
             cout << "Tidak Dapat Melakukan Pesan Parkir Area ! " << location << endl;
         }
     }
+  void displayMenu() {
+        cout << "=================================================================" << endl;
+        cout << "|||| SeSaLi PARKING SYSTEM ||||" << endl;
+        cout << "1. Register" << endl << "2. Login" << endl << "3. Search Parking Spot" << endl << "4. Book Parking Spot" << endl << "5. Logout" << endl << "6. Exit" << endl;
+        cout << "=================================================================" << endl;
+        cout << "Enter your choice: ";
+    }
+};
 
 void logout() {
         if (!loggedInUser.empty()) {
@@ -148,4 +157,65 @@ void handleBookParkingSpot(ParkingSystem& ps) {
     cout << "Enter location: ";
     getline(cin, location);
     ps.bookParkingSpot(location);
+}
+
+
+int main() {
+    ParkingSystem ps;
+    int choice;
+
+    while (true) {
+        ps.displayMenu();
+        while (!(cin >> choice)) {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Pilihan tidak valid! Masukkan angka: " << endl;
+        }
+        cin.ignore();
+        
+        switch (choice) {
+            case 1:
+                handleUserRegistration(ps);
+                break;
+            case 2:
+                if (handleUserLogin(ps)) {
+                    while (true) {
+                        ps.displayMenu();
+                        while (!(cin >> choice)) { 
+                            cin.clear();
+                            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                            cout << "Pilihan tidak valid! Masukkan angka: " << endl;
+                        }
+                        cin.ignore();
+
+                        if (choice == 5) {
+                            ps.logout();
+                            break;
+                        }
+
+                        switch (choice) {
+                            case 3:
+                                handleSearchParkingSpot(ps);
+                                break;
+                            case 4:
+                                handleBookParkingSpot(ps);
+                                break;
+                            case 6:
+                                cout << "Keluar..." << endl;
+                                return 0;
+                            default:
+                                cout << "Pilihan tidak valid!" << endl;
+                        }
+                    }
+                }
+                break;
+            case 6:
+                cout << "Keluar..." << endl;
+                return 0;
+            default:
+                cout << "Pilihan tidak valid!" << endl;
+        }
+    }
+
+    return 0;
 }
